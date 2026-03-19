@@ -35,7 +35,7 @@ def get_client() -> anthropic.Anthropic:
 
 
 # ─── データ取得 ───────────────────────────────────────────
-@st.cache_data(ttl=3600, show_spinner=False)
+@st.cache_data(ttl=7200, show_spinner=False)
 def fetch_stock(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame, str]:
     t = yf.Ticker(ticker)
     monthly = t.history(period="max", interval="1mo")
