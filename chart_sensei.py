@@ -20,10 +20,122 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# ── Nordic × Playful デザイン ─────────────────────────────
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* 背景 */
+.stApp {
+    background: #0d1117;
+}
+
+/* サイドバー */
+section[data-testid="stSidebar"] {
+    background: #161b22;
+    border-right: 1px solid #2d333b;
+}
+
+/* メインエリア */
+section.main > div {
+    padding-top: 1.5rem;
+}
+
+/* タイトル */
+h1 {
+    color: #e6edf3 !important;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+h2, h3 {
+    color: #e6edf3 !important;
+    font-weight: 600;
+}
+
+/* カード風ボックス */
+.nordic-card {
+    background: #161b22;
+    border: 1px solid #2d333b;
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1rem;
+}
+
+/* ラジオボタン横並び */
 div[data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
-h1 { color: #f0c27f; }
+div[role="radiogroup"] { gap: 0.5rem; }
+div[role="radiogroup"] label {
+    background: #21262d !important;
+    border: 1px solid #2d333b !important;
+    border-radius: 20px !important;
+    padding: 0.4rem 0.9rem !important;
+    color: #c9d1d9 !important;
+    font-size: 0.88rem !important;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+div[role="radiogroup"] label:hover {
+    border-color: #58a6ff !important;
+    color: #58a6ff !important;
+}
+
+/* プライマリボタン */
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #238636, #2ea043) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    padding: 0.65rem 1.5rem !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(35,134,54,0.4);
+    transition: transform 0.1s;
+}
+.stButton > button[kind="primary"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(35,134,54,0.5);
+}
+
+/* セカンダリボタン */
+.stButton > button[kind="secondary"] {
+    background: #21262d !important;
+    border: 1px solid #2d333b !important;
+    border-radius: 10px !important;
+    color: #c9d1d9 !important;
+}
+
+/* info/error ボックス */
+div[data-testid="stAlert"] {
+    border-radius: 12px !important;
+}
+
+/* divider */
+hr { border-color: #2d333b !important; }
+
+/* caption */
+div[data-testid="stCaptionContainer"] p { color: #6e7681 !important; }
+
+/* spinner */
+div[data-testid="stSpinner"] { color: #58a6ff !important; }
+
+/* step badge */
+.step-badge {
+    display: inline-block;
+    background: #1f6feb;
+    color: white;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    line-height: 26px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-right: 8px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -339,8 +451,16 @@ def parse_judgments(text: str) -> tuple[str | None, str | None, str | None, str 
 # UI
 # ═══════════════════════════════════════════════════════════
 
-st.title("📈 くにちゃんのチャート先生")
-st.caption("チャートを自分で読む → 先生に答え合わせ。繰り返しで目が育つ。")
+st.markdown("""
+<div style="padding:0.5rem 0 1.2rem;">
+  <div style="font-size:1.6rem;font-weight:700;color:#e6edf3;letter-spacing:-0.5px;">
+    📈 くにちゃんのチャート先生
+  </div>
+  <div style="color:#6e7681;font-size:0.9rem;margin-top:4px;">
+    自分でチャートを読む → 先生に答え合わせ → 目が育つ
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ─── セッションステート初期化 ────────────────────────────
 for key, val in [("show_answer", False), ("ai_result", None),
@@ -350,31 +470,60 @@ for key, val in [("show_answer", False), ("ai_result", None),
         st.session_state[key] = val
 
 with st.sidebar:
-    st.header("🔍 銘柄を選ぶ")
+    st.markdown("### 🔍 銘柄を入力")
     ticker_input = st.text_input(
-        "銘柄コード（4桁）",
+        "証券コード（4桁）",
         placeholder="例: 6232",
-        help="4桁の証券コードをそのまま入力してください",
+        help="4桁の証券コードをそのまま入力 → Enterで検索",
     )
+
+    # スマホ：入力後にサイドバーを自動で閉じる
+    if ticker_input:
+        st.components.v1.html("""
+<script>
+(function() {
+    function closeSidebar() {
+        var btn = window.parent.document.querySelector('[data-testid="stSidebarCollapseButton"]');
+        if (!btn) btn = window.parent.document.querySelector('[data-testid="collapsedControl"]');
+        if (btn) btn.click();
+    }
+    setTimeout(closeSidebar, 400);
+})();
+</script>
+""", height=0)
+
     st.markdown("---")
     st.markdown("""
 **使い方**
-1. 銘柄コード入力
+1. 証券コードを入力（4桁）
 2. 月足で長期局面を選択
 3. 日足で短期勢いを選択
-4. 先生に確認 → トレンドライン表示
+4. 先生に確認 → 答え合わせ
 
 ---
 **銘柄例**
-- `7203` トヨタ
-- `6758` ソニー
-- `9984` ソフトバンクG
-- `6232` ACSL
-- `4755` 楽天グループ
+| コード | 銘柄 |
+|--------|------|
+| 7203 | トヨタ |
+| 6758 | ソニー |
+| 9984 | ソフトバンクG |
+| 6232 | ACSL |
+| 4755 | 楽天 |
 """)
 
 if not ticker_input:
-    st.info("← 左のサイドバーに銘柄コードを入力してください")
+    st.markdown("""
+<div style="background:#161b22;border:1px solid #2d333b;border-radius:14px;
+            padding:2rem;text-align:center;margin-top:1rem;">
+  <div style="font-size:2.5rem;margin-bottom:0.8rem;">📊</div>
+  <div style="color:#e6edf3;font-size:1.1rem;font-weight:600;margin-bottom:0.4rem;">
+    銘柄コードを入力してスタート
+  </div>
+  <div style="color:#6e7681;font-size:0.9rem;">
+    左上の ≡ を押して、4桁の証券コードを入力してください
+  </div>
+</div>
+""", unsafe_allow_html=True)
     st.stop()
 
 raw = ticker_input.strip()
@@ -417,115 +566,111 @@ daily_options = [
 ]
 
 # ══════════════════════════════════════════════════════════
-# 答え合わせモード（先生ボタンを押した後）
+# 答え合わせモード
 # ══════════════════════════════════════════════════════════
 if st.session_state.show_answer:
-    # ページ先頭へ強制スクロール
+    # ページ先頭へスクロール
     st.components.v1.html("""
 <script>
 (function() {
-    // Streamlit のスクロール可能コンテナを全パターンで試す
-    var selectors = [
-        'section.main',
-        '[data-testid="stAppViewContainer"]',
-        '[data-testid="stMain"]',
-        '.main',
-        'html', 'body'
-    ];
     function scrollTop() {
-        selectors.forEach(function(sel) {
+        ['section.main','[data-testid="stAppViewContainer"]','.main','html','body'].forEach(function(sel){
             var el = window.parent.document.querySelector(sel);
             if (el) el.scrollTop = 0;
         });
         window.parent.scrollTo(0, 0);
     }
-    scrollTop();
-    setTimeout(scrollTop, 100);
-    setTimeout(scrollTop, 300);
+    scrollTop(); setTimeout(scrollTop, 150); setTimeout(scrollTop, 400);
 })();
 </script>
 """, height=0)
 
-    st.header(f"📊 {stock_name}（{ticker}）— 答え合わせ")
-    st.markdown("### 💬 くにちゃん先生の解説（テクニカル分析）")
+    # 銘柄ヘッダー
+    st.markdown(f"""
+<div style="margin-bottom:1rem;">
+  <span style="color:#6e7681;font-size:0.85rem;">答え合わせ</span>
+  <div style="color:#e6edf3;font-size:1.3rem;font-weight:700;">{stock_name} <span style="color:#6e7681;font-size:1rem;">({ticker})</span></div>
+</div>
+""", unsafe_allow_html=True)
 
     monthly_correct, daily_correct, long_term, short_term, body_text = parse_judgments(st.session_state.ai_result)
 
-    # ── 総合判断を大きく最上部に ──────────────────────────
-    def verdict_color(v):
-        return {"買い": ("#166534", "#bbf7d0"), "待ち": ("#78350f", "#fef3c7"), "売り": ("#7f1d1d", "#fecaca")}.get(v, ("#374151", "#f3f4f6"))
+    # ── 総合判断カード ────────────────────────────────────
+    def vcolor(v):
+        return {"買い":("#1a4731","#4ade80","#22c55e"), "待ち":("#3d2a00","#fcd34d","#f59e0b"), "売り":("#3d0f0f","#f87171","#ef4444")}.get(v, ("#1c2128","#8b949e","#6e7681"))
 
-    if long_term or short_term:
-        lt_bg, lt_fg = verdict_color(long_term)
-        st_bg, st_fg = verdict_color(short_term)
-        st.markdown(
-            f'<div style="display:flex;gap:1rem;margin-bottom:1rem;">'
-            f'<div style="flex:1;background:{lt_bg};border-radius:10px;padding:1rem 1.2rem;text-align:center;">'
-            f'<div style="color:#9ca3af;font-size:0.8rem;margin-bottom:6px;">長期（月足）</div>'
-            f'<div style="color:{lt_fg};font-size:2rem;font-weight:bold;">{long_term or "―"}</div>'
-            f'</div>'
-            f'<div style="flex:1;background:{st_bg};border-radius:10px;padding:1rem 1.2rem;text-align:center;">'
-            f'<div style="color:#9ca3af;font-size:0.8rem;margin-bottom:6px;">短期（日足）</div>'
-            f'<div style="color:{st_fg};font-size:2rem;font-weight:bold;">{short_term or "―"}</div>'
-            f'</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
+    lt_bg, lt_txt, lt_acc = vcolor(long_term)
+    st_bg, st_txt, st_acc = vcolor(short_term)
 
-    # ── 正誤バッジ ────────────────────────────────────────
+    st.markdown(
+        f'<div style="display:flex;gap:12px;margin-bottom:1rem;">'
+        f'<div style="flex:1;background:{lt_bg};border:1px solid {lt_acc}33;border-radius:16px;padding:1.1rem;text-align:center;">'
+        f'<div style="color:#8b949e;font-size:0.75rem;font-weight:600;letter-spacing:0.05em;margin-bottom:6px;">長期（月足）</div>'
+        f'<div style="color:{lt_txt};font-size:2rem;font-weight:800;line-height:1;">{long_term or "―"}</div>'
+        f'</div>'
+        f'<div style="flex:1;background:{st_bg};border:1px solid {st_acc}33;border-radius:16px;padding:1.1rem;text-align:center;">'
+        f'<div style="color:#8b949e;font-size:0.75rem;font-weight:600;letter-spacing:0.05em;margin-bottom:6px;">短期（日足）</div>'
+        f'<div style="color:{st_txt};font-size:2rem;font-weight:800;line-height:1;">{short_term or "―"}</div>'
+        f'</div>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── あなたの判断 + 正誤 ───────────────────────────────
     def badge(label, result):
         if result == "正解":
-            tag = '<span style="background:#166534;color:#bbf7d0;padding:2px 8px;border-radius:10px;font-weight:bold;margin-right:6px;">✅ 正解</span>'
+            pill = '<span style="background:#1a4731;color:#4ade80;padding:2px 10px;border-radius:20px;font-size:0.78rem;font-weight:700;margin-right:6px;">✅ 正解</span>'
         elif result == "不正解":
-            tag = '<span style="background:#7f1d1d;color:#fecaca;padding:2px 8px;border-radius:10px;font-weight:bold;margin-right:6px;">❌ 不正解</span>'
+            pill = '<span style="background:#3d0f0f;color:#f87171;padding:2px 10px;border-radius:20px;font-size:0.78rem;font-weight:700;margin-right:6px;">❌ 不正解</span>'
         else:
-            tag = ""
-        return f'<div style="color:#f1f5f9;font-size:0.9rem;">{tag}{label}</div>'
+            pill = ""
+        return f'<div style="color:#c9d1d9;font-size:0.88rem;line-height:1.5;">{pill}{label}</div>'
 
     col_m, col_d = st.columns(2)
     with col_m:
         st.markdown(
-            f'<div style="background:#1f2937;padding:0.7rem 1rem;border-radius:8px;">'
-            f'<div style="color:#9ca3af;font-size:0.75rem;margin-bottom:4px;">あなたの長期判断</div>'
+            f'<div style="background:#161b22;border:1px solid #2d333b;border-radius:12px;padding:0.8rem 1rem;">'
+            f'<div style="color:#6e7681;font-size:0.72rem;font-weight:600;letter-spacing:0.04em;margin-bottom:5px;">あなたの長期判断</div>'
             f'{badge(st.session_state.monthly_phase, monthly_correct)}</div>',
             unsafe_allow_html=True,
         )
     with col_d:
         st.markdown(
-            f'<div style="background:#1f2937;padding:0.7rem 1rem;border-radius:8px;">'
-            f'<div style="color:#9ca3af;font-size:0.75rem;margin-bottom:4px;">あなたの短期判断</div>'
+            f'<div style="background:#161b22;border:1px solid #2d333b;border-radius:12px;padding:0.8rem 1rem;">'
+            f'<div style="color:#6e7681;font-size:0.72rem;font-weight:600;letter-spacing:0.04em;margin-bottom:5px;">あなたの短期判断</div>'
             f'{badge(st.session_state.daily_momentum, daily_correct)}</div>',
             unsafe_allow_html=True,
         )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
 
-    # ── 先生の解説本文 ────────────────────────────────────
+    # ── 先生の解説 ────────────────────────────────────────
     st.markdown(
-        f'<div style="background:#1e3a5f;border-left:5px solid #f0c27f;padding:1.2rem 1.5rem;'
-        f'border-radius:6px;font-size:1.05rem;line-height:1.9;color:#f1f5f9;">'
+        f'<div style="background:#161b22;border:1px solid #2d333b;border-left:4px solid #58a6ff;'
+        f'border-radius:12px;padding:1.2rem 1.4rem;font-size:0.95rem;line-height:1.85;color:#c9d1d9;">'
+        f'<div style="color:#58a6ff;font-size:0.75rem;font-weight:700;letter-spacing:0.06em;margin-bottom:8px;">💬 くにちゃん先生の解説</div>'
         f'{body_text.replace(chr(10), "<br>")}</div>',
         unsafe_allow_html=True,
     )
 
-    # ── スクロール誘導 ─────────────────────────────────────
+    # ── スクロール誘導 ────────────────────────────────────
     st.markdown("""
-<div style="text-align:center;margin:1.2rem 0;padding:0.8rem;
-            background:#1f2937;border-radius:8px;color:#9ca3af;font-size:0.95rem;">
-    📉 下にスクロールすると、トレンドライン付きチャートで答え合わせができます ↓
+<div style="text-align:center;margin:1rem 0;padding:0.75rem;background:#161b22;
+            border:1px solid #2d333b;border-radius:10px;color:#6e7681;font-size:0.88rem;">
+    下にスクロールするとトレンドライン付きチャートで確認できます ↓
 </div>
 """, unsafe_allow_html=True)
 
     st.divider()
 
     # ── トレンドライン付きチャート ─────────────────────────
-    st.subheader("月足チャート（トレンドライン入り）")
-    st.caption("黄丸＝基点 / 赤破線＝抵抗ライン / 緑破線＝支持ライン（平行チャネル）")
+    st.markdown("#### 月足チャート（トレンドライン入り）")
+    st.caption("黄丸＝基点 / 赤破線＝抵抗ライン / 緑破線＝支持ライン")
     monthly_fig = build_chart(monthly_df, f"月足（全期間 約{years}年）", show_trendline=True)
     st.plotly_chart(monthly_fig, use_container_width=True)
 
-    st.subheader("日足チャート（トレンドライン入り）")
-    st.caption("黄丸＝基点 / 赤破線＝抵抗ライン / 緑破線＝支持ライン（平行チャネル）")
+    st.markdown("#### 日足チャート（トレンドライン入り）")
+    st.caption("黄丸＝基点 / 赤破線＝抵抗ライン / 緑破線＝支持ライン")
     daily_fig = build_chart(daily_df, "日足（6ヶ月）", show_trendline=True)
     st.plotly_chart(daily_fig, use_container_width=True)
 
@@ -536,43 +681,48 @@ if st.session_state.show_answer:
         st.rerun()
 
 # ══════════════════════════════════════════════════════════
-# 問題モード（通常表示、トレンドラインなし）
+# 問題モード
 # ══════════════════════════════════════════════════════════
 else:
-    st.header(f"📊 {stock_name}（{ticker}）")
+    # 銘柄ヘッダー
+    st.markdown(f"""
+<div style="margin-bottom:1.2rem;">
+  <div style="color:#e6edf3;font-size:1.3rem;font-weight:700;">
+    {stock_name} <span style="color:#6e7681;font-size:1rem;">({ticker})</span>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
     # STEP 1: 月足
-    st.subheader("STEP 1｜月足チャート — 長期トレンドを読む")
+    st.markdown('<div style="display:flex;align-items:center;gap:8px;margin-bottom:0.3rem;"><span class="step-badge">1</span><span style="color:#e6edf3;font-weight:600;font-size:1rem;">月足チャート — 長期トレンドを読む</span></div>', unsafe_allow_html=True)
     monthly_fig = build_chart(monthly_df, f"月足（全期間 約{years}年）", show_trendline=False)
     st.plotly_chart(monthly_fig, use_container_width=True)
 
-    st.markdown("#### 📍 今の長期ポジション、どれだと思う？")
+    st.markdown('<div style="color:#c9d1d9;font-size:0.9rem;font-weight:600;margin-bottom:0.4rem;">📍 今の長期ポジション、どれだと思う？</div>', unsafe_allow_html=True)
     monthly_phase = st.radio("長期局面", monthly_options, key="monthly_phase_q",
                              horizontal=True, label_visibility="collapsed")
 
     st.divider()
 
     # STEP 2: 日足
-    st.subheader("STEP 2｜日足チャート — 短期の勢いを読む")
+    st.markdown('<div style="display:flex;align-items:center;gap:8px;margin-bottom:0.3rem;"><span class="step-badge">2</span><span style="color:#e6edf3;font-weight:600;font-size:1rem;">日足チャート — 短期の勢いを読む</span></div>', unsafe_allow_html=True)
     daily_fig = build_chart(daily_df, "日足（6ヶ月）", show_trendline=False)
     st.plotly_chart(daily_fig, use_container_width=True)
 
-    st.markdown("#### ⚡ 今の短期の勢い、どれだと思う？")
+    st.markdown('<div style="color:#c9d1d9;font-size:0.9rem;font-weight:600;margin-bottom:0.4rem;">⚡ 今の短期の勢い、どれだと思う？</div>', unsafe_allow_html=True)
     daily_momentum = st.radio("短期勢い", daily_options, key="daily_momentum_q",
                               horizontal=True, label_visibility="collapsed")
 
     st.divider()
 
     # STEP 3: ボタン
-    st.subheader("STEP 3｜くにちゃん先生に確認する")
-    col_btn, col_hint = st.columns([1, 3])
-    with col_btn:
-        ask_btn = st.button("🎯 先生に聞いてみる！", type="primary", use_container_width=True)
-    with col_hint:
-        st.caption("自分の判断を先に決めてからボタンを押そう。それが一番勉強になる。")
+    st.markdown('<div style="display:flex;align-items:center;gap:8px;margin-bottom:0.8rem;"><span class="step-badge">3</span><span style="color:#e6edf3;font-weight:600;font-size:1rem;">くにちゃん先生に確認する</span></div>', unsafe_allow_html=True)
+    st.caption("自分の判断を先に決めてからボタンを押そう。それが一番勉強になる。")
+
+    ask_btn = st.button("🎯 先生に聞いてみる！", type="primary", use_container_width=True)
 
     if ask_btn:
-        with st.spinner("くにちゃん先生が分析中..."):
+        with st.spinner("くにちゃん先生が分析中... ちょっと待ってね"):
             monthly_sum = ohlc_summary(monthly_df, "月足", n=12)
             daily_sum   = ohlc_summary(daily_df,   "日足", n=20)
             try:
@@ -585,7 +735,6 @@ else:
                 st.error(f"AI 呼び出しエラー: {e}")
                 st.stop()
 
-        # セッションに保存してページ先頭へ
         st.session_state.ai_result = result
         st.session_state.monthly_phase = monthly_phase
         st.session_state.daily_momentum = daily_momentum
