@@ -38,17 +38,35 @@ def get_client() -> anthropic.Anthropic:
 @st.cache_data(ttl=7200, show_spinner=False)
 def fetch_stock(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame, str]:
     import time
-    for attempt in range(3):
+
+    def clean(df):
+        # yf.download はマルチレベルカラムになる場合がある
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+        return df.dropna(how="all")
+
+    for attempt in range(4):
         try:
-            t = yf.Ticker(ticker)
-            monthly = t.history(period="max", interval="1mo")
-            daily = t.history(period="6mo", interval="1d")
-            info = t.info
-            name = info.get("longName") or info.get("shortName") or ticker
+            monthly = clean(yf.download(
+                ticker, period="max", interval="1mo",
+                progress=False, auto_adjust=True
+            ))
+            time.sleep(1)
+            daily = clean(yf.download(
+                ticker, period="6mo", interval="1d",
+                progress=False, auto_adjust=True
+            ))
+            # 銘柄名は取得失敗してもアプリは動くようにする
+            try:
+                time.sleep(1)
+                info = yf.Ticker(ticker).fast_info
+                name = getattr(info, "long_name", None) or ticker
+            except Exception:
+                name = ticker
             return monthly, daily, name
         except Exception as e:
-            if attempt < 2:
-                time.sleep(3 + attempt * 2)
+            if attempt < 3:
+                time.sleep(5 * (attempt + 1))
             else:
                 raise e
 
