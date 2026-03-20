@@ -21,121 +21,145 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── Nordic × Playful デザイン ─────────────────────────────
+# ── Nordic × Playful デザイン（Finland Blue）────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
 
-/* 背景 */
+/* ── 背景：Finland Blue ── */
 .stApp {
-    background: #0d1117;
+    background: #0b2545;
 }
 
-/* サイドバー */
+/* ── サイドバー：少し明るめの青 ── */
 section[data-testid="stSidebar"] {
-    background: #161b22;
-    border-right: 1px solid #2d333b;
+    background: #13315c;
+    border-right: 1px solid #1e4d8c;
+}
+/* サイドバー内テキストをすべて白に */
+section[data-testid="stSidebar"] * {
+    color: #ffffff !important;
+}
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] li,
+section[data-testid="stSidebar"] td,
+section[data-testid="stSidebar"] th {
+    color: #e8f1ff !important;
+}
+section[data-testid="stSidebar"] label {
+    color: #ffffff !important;
+}
+/* サイドバーの入力欄 */
+section[data-testid="stSidebar"] input {
+    background: #1a4080 !important;
+    border: 1px solid #4a90d9 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+}
+section[data-testid="stSidebar"] input::placeholder {
+    color: #a0c0e8 !important;
 }
 
-/* メインエリア */
-section.main > div {
-    padding-top: 1.5rem;
-}
+/* ── メインエリア ── */
+section.main > div { padding-top: 1.5rem; }
 
-/* タイトル */
-h1 {
-    color: #e6edf3 !important;
+/* ── 見出し ── */
+h1, h2, h3, h4 {
+    color: #ffffff !important;
     font-weight: 700;
-    letter-spacing: -0.5px;
-}
-h2, h3 {
-    color: #e6edf3 !important;
-    font-weight: 600;
 }
 
-/* カード風ボックス */
-.nordic-card {
-    background: #161b22;
-    border: 1px solid #2d333b;
-    border-radius: 14px;
-    padding: 1.2rem 1.4rem;
-    margin-bottom: 1rem;
+/* ── 本文テキスト ── */
+p, li, span, div {
+    color: #e8f1ff;
 }
 
-/* ラジオボタン横並び */
+/* ── ラジオボタン ── */
 div[data-testid="stHorizontalBlock"] { flex-wrap: wrap; }
 div[role="radiogroup"] { gap: 0.5rem; }
 div[role="radiogroup"] label {
-    background: #21262d !important;
-    border: 1px solid #2d333b !important;
+    background: #1a4080 !important;
+    border: 1.5px solid #4a90d9 !important;
     border-radius: 20px !important;
-    padding: 0.4rem 0.9rem !important;
-    color: #c9d1d9 !important;
+    padding: 0.45rem 1rem !important;
+    color: #ffffff !important;
     font-size: 0.88rem !important;
+    font-weight: 500 !important;
     cursor: pointer;
     transition: all 0.15s;
 }
 div[role="radiogroup"] label:hover {
-    border-color: #58a6ff !important;
-    color: #58a6ff !important;
+    background: #2a5fa8 !important;
+    border-color: #7ab8f5 !important;
+    color: #ffffff !important;
 }
 
-/* プライマリボタン */
+/* ── プライマリボタン（コーラルオレンジ＝Playful） ── */
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #238636, #2ea043) !important;
+    background: linear-gradient(135deg, #e85d26, #f07840) !important;
     border: none !important;
-    border-radius: 10px !important;
-    font-weight: 700 !important;
+    border-radius: 12px !important;
+    font-weight: 800 !important;
     font-size: 1rem !important;
-    padding: 0.65rem 1.5rem !important;
-    color: white !important;
-    box-shadow: 0 2px 8px rgba(35,134,54,0.4);
-    transition: transform 0.1s;
+    padding: 0.7rem 1.5rem !important;
+    color: #ffffff !important;
+    box-shadow: 0 3px 10px rgba(232,93,38,0.45);
+    transition: transform 0.1s, box-shadow 0.1s;
 }
 .stButton > button[kind="primary"]:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(35,134,54,0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(232,93,38,0.55);
 }
 
-/* セカンダリボタン */
+/* ── セカンダリボタン ── */
 .stButton > button[kind="secondary"] {
-    background: #21262d !important;
-    border: 1px solid #2d333b !important;
-    border-radius: 10px !important;
-    color: #c9d1d9 !important;
-}
-
-/* info/error ボックス */
-div[data-testid="stAlert"] {
+    background: #1a4080 !important;
+    border: 1.5px solid #4a90d9 !important;
     border-radius: 12px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+.stButton > button[kind="secondary"]:hover {
+    background: #2a5fa8 !important;
 }
 
-/* divider */
-hr { border-color: #2d333b !important; }
+/* ── divider ── */
+hr { border-color: #1e4d8c !important; }
 
-/* caption */
-div[data-testid="stCaptionContainer"] p { color: #6e7681 !important; }
+/* ── caption ── */
+div[data-testid="stCaptionContainer"] p {
+    color: #a0c0e8 !important;
+}
 
-/* spinner */
-div[data-testid="stSpinner"] { color: #58a6ff !important; }
+/* ── spinner ── */
+div[data-testid="stSpinner"] { color: #7ab8f5 !important; }
 
-/* step badge */
+/* ── step badge ── */
 .step-badge {
     display: inline-block;
-    background: #1f6feb;
+    background: #e85d26;
     color: white;
     border-radius: 50%;
     width: 26px; height: 26px;
     line-height: 26px;
     text-align: center;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 0.85rem;
     margin-right: 8px;
 }
+
+/* ── info / error ── */
+div[data-testid="stAlert"] {
+    border-radius: 12px !important;
+    background: #13315c !important;
+    border-color: #4a90d9 !important;
+    color: #ffffff !important;
+}
+div[data-testid="stAlert"] p { color: #ffffff !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -379,13 +403,13 @@ def build_chart(df: pd.DataFrame, title: str, show_trendline: bool = False) -> g
         title=dict(text=title, font=dict(color="#f0c27f")),
         height=460,
         xaxis_rangeslider_visible=False,
-        plot_bgcolor="#111827", paper_bgcolor="#111827",
+        plot_bgcolor="#0d2d52", paper_bgcolor="#0b2545",
         font=dict(color="#d1d5db"),
         legend=dict(orientation="h", y=1.05, x=0),
         margin=dict(l=0, r=10, t=50, b=0),
     )
-    fig.update_xaxes(gridcolor="#1f2937", showgrid=True)
-    fig.update_yaxes(gridcolor="#1f2937", showgrid=True)
+    fig.update_xaxes(gridcolor="#1e4d8c", showgrid=True, color="#a0c0e8")
+    fig.update_yaxes(gridcolor="#1e4d8c", showgrid=True, color="#a0c0e8")
     return fig
 
 
@@ -513,7 +537,7 @@ with st.sidebar:
 
 if not ticker_input:
     st.markdown("""
-<div style="background:#161b22;border:1px solid #2d333b;border-radius:14px;
+<div style="background:#13315c;border:1px solid #2a6496;border-radius:14px;
             padding:2rem;text-align:center;margin-top:1rem;">
   <div style="font-size:2.5rem;margin-bottom:0.8rem;">📊</div>
   <div style="color:#e6edf3;font-size:1.1rem;font-weight:600;margin-bottom:0.4rem;">
@@ -629,14 +653,14 @@ if st.session_state.show_answer:
     col_m, col_d = st.columns(2)
     with col_m:
         st.markdown(
-            f'<div style="background:#161b22;border:1px solid #2d333b;border-radius:12px;padding:0.8rem 1rem;">'
+            f'<div style="background:#13315c;border:1px solid #2a6496;border-radius:12px;padding:0.8rem 1rem;">'
             f'<div style="color:#6e7681;font-size:0.72rem;font-weight:600;letter-spacing:0.04em;margin-bottom:5px;">あなたの長期判断</div>'
             f'{badge(st.session_state.monthly_phase, monthly_correct)}</div>',
             unsafe_allow_html=True,
         )
     with col_d:
         st.markdown(
-            f'<div style="background:#161b22;border:1px solid #2d333b;border-radius:12px;padding:0.8rem 1rem;">'
+            f'<div style="background:#13315c;border:1px solid #2a6496;border-radius:12px;padding:0.8rem 1rem;">'
             f'<div style="color:#6e7681;font-size:0.72rem;font-weight:600;letter-spacing:0.04em;margin-bottom:5px;">あなたの短期判断</div>'
             f'{badge(st.session_state.daily_momentum, daily_correct)}</div>',
             unsafe_allow_html=True,
@@ -646,9 +670,9 @@ if st.session_state.show_answer:
 
     # ── 先生の解説 ────────────────────────────────────────
     st.markdown(
-        f'<div style="background:#161b22;border:1px solid #2d333b;border-left:4px solid #58a6ff;'
+        f'<div style="background:#13315c;border:1px solid #2a6496;border-left:4px solid #7ab8f5;'
         f'border-radius:12px;padding:1.2rem 1.4rem;font-size:0.95rem;line-height:1.85;color:#c9d1d9;">'
-        f'<div style="color:#58a6ff;font-size:0.75rem;font-weight:700;letter-spacing:0.06em;margin-bottom:8px;">💬 くにちゃん先生の解説</div>'
+        f'<div style="color:#7ab8f5;font-size:0.75rem;font-weight:700;letter-spacing:0.06em;margin-bottom:8px;">💬 くにちゃん先生の解説</div>'
         f'{body_text.replace(chr(10), "<br>")}</div>',
         unsafe_allow_html=True,
     )
@@ -656,7 +680,7 @@ if st.session_state.show_answer:
     # ── スクロール誘導 ────────────────────────────────────
     st.markdown("""
 <div style="text-align:center;margin:1rem 0;padding:0.75rem;background:#161b22;
-            border:1px solid #2d333b;border-radius:10px;color:#6e7681;font-size:0.88rem;">
+            border:1px solid #2d333b;border-radius:10px;color:#a0c0e8;font-size:0.88rem;">
     下にスクロールするとトレンドライン付きチャートで確認できます ↓
 </div>
 """, unsafe_allow_html=True)
