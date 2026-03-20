@@ -37,12 +37,20 @@ def get_client() -> anthropic.Anthropic:
 # ─── データ取得 ───────────────────────────────────────────
 @st.cache_data(ttl=7200, show_spinner=False)
 def fetch_stock(ticker: str) -> tuple[pd.DataFrame, pd.DataFrame, str]:
-    t = yf.Ticker(ticker)
-    monthly = t.history(period="max", interval="1mo")
-    daily = t.history(period="6mo", interval="1d")
-    info = t.info
-    name = info.get("longName") or info.get("shortName") or ticker
-    return monthly, daily, name
+    import time
+    for attempt in range(3):
+        try:
+            t = yf.Ticker(ticker)
+            monthly = t.history(period="max", interval="1mo")
+            daily = t.history(period="6mo", interval="1d")
+            info = t.info
+            name = info.get("longName") or info.get("shortName") or ticker
+            return monthly, daily, name
+        except Exception as e:
+            if attempt < 2:
+                time.sleep(3 + attempt * 2)
+            else:
+                raise e
 
 
 # ─── OHLC 要約（AI送信用）────────────────────────────────
@@ -364,7 +372,10 @@ with st.spinner(f"{ticker} のデータを取得中..."):
     try:
         monthly_df, daily_df, stock_name = fetch_stock(ticker)
     except Exception as e:
-        st.error(f"データ取得エラー: {e}")
+        if "rate" in str(e).lower() or "too many" in str(e).lower():
+            st.error("データ取得に失敗しました。少し待ってから、ページを再読み込みしてください。（yfinanceのアクセス制限）")
+        else:
+            st.error(f"データ取得エラー: {e}")
         st.stop()
 
 if monthly_df.empty or daily_df.empty:
