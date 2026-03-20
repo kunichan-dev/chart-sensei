@@ -453,9 +453,9 @@ def parse_judgments(text: str) -> tuple[str | None, str | None, str | None, str 
     for line in lines:
         s = line.strip()
         if s.startswith("月足判定"):
-            monthly_correct = "正解" if "正解" in s else "不正解"
+            monthly_correct = "不正解" if "不正解" in s else "正解"
         elif s.startswith("日足判定"):
-            daily_correct = "正解" if "正解" in s else "不正解"
+            daily_correct = "不正解" if "不正解" in s else "正解"
         elif s.startswith("長期結論"):
             for v in ["買い", "待ち", "売り"]:
                 if v in s:
