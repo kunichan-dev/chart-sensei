@@ -593,18 +593,39 @@ daily_options = [
 # 答え合わせモード
 # ══════════════════════════════════════════════════════════
 if st.session_state.show_answer:
-    # ページ先頭へスクロール
+    # ── ページ最上部アンカー ──────────────────────────────
+    st.markdown('<div id="pagetop"></div>', unsafe_allow_html=True)
     st.components.v1.html("""
 <script>
 (function() {
     function scrollTop() {
-        ['section.main','[data-testid="stAppViewContainer"]','.main','html','body'].forEach(function(sel){
+        // アンカーへジャンプ
+        var anchor = window.parent.document.getElementById('pagetop');
+        if (anchor) {
+            anchor.scrollIntoView({block: 'start', behavior: 'instant'});
+            return;
+        }
+        // フォールバック：全コンテナをスクロール
+        var selectors = [
+            '[data-testid="stMainBlockContainer"]',
+            '[data-testid="stAppViewBlockContainer"]',
+            'section[data-testid="stMain"]',
+            'section.main',
+            '.main',
+            'html',
+            'body'
+        ];
+        selectors.forEach(function(sel) {
             var el = window.parent.document.querySelector(sel);
             if (el) el.scrollTop = 0;
         });
         window.parent.scrollTo(0, 0);
     }
-    scrollTop(); setTimeout(scrollTop, 150); setTimeout(scrollTop, 400);
+    // レンダリング完了後に複数回実行
+    scrollTop();
+    setTimeout(scrollTop, 100);
+    setTimeout(scrollTop, 300);
+    setTimeout(scrollTop, 600);
 })();
 </script>
 """, height=0)
@@ -612,8 +633,8 @@ if st.session_state.show_answer:
     # 銘柄ヘッダー
     st.markdown(f"""
 <div style="margin-bottom:1rem;">
-  <span style="color:#6e7681;font-size:0.85rem;">答え合わせ</span>
-  <div style="color:#e6edf3;font-size:1.3rem;font-weight:700;">{stock_name} <span style="color:#6e7681;font-size:1rem;">({ticker})</span></div>
+  <span style="color:#a0c0e8;font-size:0.85rem;">答え合わせ</span>
+  <div style="color:#ffffff;font-size:1.3rem;font-weight:700;">{stock_name} <span style="color:#a0c0e8;font-size:1rem;">({ticker})</span></div>
 </div>
 """, unsafe_allow_html=True)
 
