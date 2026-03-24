@@ -477,11 +477,11 @@ def parse_judgments(text: str) -> tuple[str | None, str | None, str | None, str 
 
 st.markdown("""
 <div style="padding:0.5rem 0 1.2rem;">
-  <div style="font-size:1.6rem;font-weight:700;color:#e6edf3;letter-spacing:-0.5px;">
+  <div style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">
     📈 くにちゃんのチャート先生
   </div>
-  <div style="color:#6e7681;font-size:0.9rem;margin-top:4px;">
-    自分でチャートを読む → 先生に答え合わせ → 目が育つ
+  <div style="color:#a0c0e8;font-size:0.9rem;margin-top:4px;">
+    実際の株チャートで、本物のテクニカル分析を学ぼう
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -536,16 +536,54 @@ with st.sidebar:
 """)
 
 if not ticker_input:
+    # ── ヒーローセクション ────────────────────────────────
     st.markdown("""
-<div style="background:#13315c;border:1px solid #2a6496;border-radius:14px;
-            padding:2rem;text-align:center;margin-top:1rem;">
-  <div style="font-size:2.5rem;margin-bottom:0.8rem;">📊</div>
-  <div style="color:#e6edf3;font-size:1.1rem;font-weight:600;margin-bottom:0.4rem;">
-    銘柄コードを入力してスタート
+<div style="background:linear-gradient(135deg,#13315c,#1a4a80);border:1px solid #2a6496;
+            border-radius:18px;padding:2rem 1.8rem 1.6rem;margin-bottom:1.2rem;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.6rem;">
+    <span style="background:#e85d26;color:white;font-size:0.72rem;font-weight:800;
+                 padding:3px 10px;border-radius:20px;letter-spacing:0.06em;">LIVE DATA</span>
+    <span style="color:#a0c0e8;font-size:0.82rem;">Yahoo Finance からリアルタイム取得</span>
   </div>
-  <div style="color:#6e7681;font-size:0.9rem;">
-    左上の ≡ を押して、4桁の証券コードを入力してください
+  <div style="color:#ffffff;font-size:1.5rem;font-weight:800;line-height:1.35;margin-bottom:0.8rem;">
+    本物の株チャートで<br>テクニカル分析を学ぶ
   </div>
+  <div style="color:#c8dff5;font-size:0.93rem;line-height:1.7;">
+    架空のデータではありません。<br>
+    今まさに市場で動いている、実際の銘柄チャートを使って<br>
+    プロのテクニカル分析の「見方」を身につけるアプリです。
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.2rem;">
+  <div style="background:#13315c;border:1px solid #2a6496;border-radius:14px;padding:1rem;">
+    <div style="font-size:1.4rem;margin-bottom:6px;">📊</div>
+    <div style="color:#ffffff;font-weight:700;font-size:0.9rem;margin-bottom:4px;">本物の株価チャート</div>
+    <div style="color:#a0c0e8;font-size:0.8rem;line-height:1.5;">上場銘柄ならなんでもOK。日本株・米国株をリアルタイムで表示。</div>
+  </div>
+  <div style="background:#13315c;border:1px solid #2a6496;border-radius:14px;padding:1rem;">
+    <div style="font-size:1.4rem;margin-bottom:6px;">📉</div>
+    <div style="color:#ffffff;font-weight:700;font-size:0.9rem;margin-bottom:4px;">トレンドライン自動描画</div>
+    <div style="color:#a0c0e8;font-size:0.8rem;line-height:1.5;">プロが引くような支持線・抵抗線を自動で表示して答え合わせ。</div>
+  </div>
+  <div style="background:#13315c;border:1px solid #2a6496;border-radius:14px;padding:1rem;">
+    <div style="font-size:1.4rem;margin-bottom:6px;">🎯</div>
+    <div style="color:#ffffff;font-weight:700;font-size:0.9rem;margin-bottom:4px;">クイズ形式で分析訓練</div>
+    <div style="color:#a0c0e8;font-size:0.8rem;line-height:1.5;">自分で局面・勢いを判断してから、AI先生の答えと比較。</div>
+  </div>
+  <div style="background:#13315c;border:1px solid #2a6496;border-radius:14px;padding:1rem;">
+    <div style="font-size:1.4rem;margin-bottom:6px;">🤖</div>
+    <div style="color:#ffffff;font-weight:700;font-size:0.9rem;margin-bottom:4px;">AI先生が解説</div>
+    <div style="color:#a0c0e8;font-size:0.8rem;line-height:1.5;">長期・短期を踏まえた買い/待ち/売りの根拠を丁寧に説明。</div>
+  </div>
+</div>
+
+<div style="background:#13315c;border:1px solid #e85d26;border-radius:14px;
+            padding:1rem 1.2rem;text-align:center;">
+  <div style="color:#ffffff;font-weight:700;font-size:1rem;margin-bottom:4px;">
+    ≡ を押して、銘柄コード（4桁）を入力してスタート
+  </div>
+  <div style="color:#a0c0e8;font-size:0.82rem;">例：7203（トヨタ）/ 6758（ソニー）/ 6232（ACSL）</div>
 </div>
 """, unsafe_allow_html=True)
     st.stop()
@@ -729,11 +767,29 @@ if st.session_state.show_answer:
 # 問題モード
 # ══════════════════════════════════════════════════════════
 else:
-    # 銘柄ヘッダー
+    # 銘柄ヘッダー（現在株価 + LIVEバッジ）
+    cur_price = monthly_df["Close"].iloc[-1]
+    prev_price = monthly_df["Close"].iloc[-2]
+    price_chg = cur_price - prev_price
+    price_chg_pct = price_chg / prev_price * 100
+    chg_color = "#4ade80" if price_chg >= 0 else "#f87171"
+    chg_sign = "+" if price_chg >= 0 else ""
+
     st.markdown(f"""
-<div style="margin-bottom:1.2rem;">
-  <div style="color:#e6edf3;font-size:1.3rem;font-weight:700;">
-    {stock_name} <span style="color:#6e7681;font-size:1rem;">({ticker})</span>
+<div style="background:#13315c;border:1px solid #2a6496;border-radius:14px;
+            padding:1rem 1.2rem;margin-bottom:1.2rem;">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+    <span style="background:#e85d26;color:white;font-size:0.68rem;font-weight:800;
+                 padding:2px 8px;border-radius:12px;letter-spacing:0.05em;">LIVE</span>
+    <span style="color:#a0c0e8;font-size:0.78rem;">実際の株価データ（Yahoo Finance）</span>
+  </div>
+  <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+    <div style="color:#ffffff;font-size:1.2rem;font-weight:700;">{stock_name}</div>
+    <div style="color:#a0c0e8;font-size:0.9rem;">{ticker}</div>
+    <div style="color:#ffffff;font-size:1.3rem;font-weight:800;">¥{cur_price:,.0f}</div>
+    <div style="color:{chg_color};font-size:0.9rem;font-weight:600;">
+      {chg_sign}{price_chg:,.0f}（{chg_sign}{price_chg_pct:.1f}%）前月比
+    </div>
   </div>
 </div>
 """, unsafe_allow_html=True)
